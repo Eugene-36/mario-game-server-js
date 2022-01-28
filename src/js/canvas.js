@@ -1,6 +1,12 @@
 import platform from '../images/platform.png';
 import hills from '../images/hills.png';
 import background from '../images/background.png';
+import platformSmallTall from '../images/platformSmallTall.png';
+//! Импорт спрайта
+import platformSmallTall from '../images/platformSmallTall.png';
+import platformSmallTall from '../images/platformSmallTall.png';
+import platformSmallTall from '../images/platformSmallTall.png';
+import platformSmallTall from '../images/platformSmallTall.png';
 
 console.log(platform);
 
@@ -15,6 +21,7 @@ const gravity = 0.5;
 //! Создаём класс игрока
 class Player {
   constructor() {
+    this.speed = 10;
     this.position = {
       x: 100,
       y: 100,
@@ -88,30 +95,29 @@ function createImage(imageSrc) {
 
 //! Создаём функцию для рестарта игры
 let platformImage = createImage(platform);
-
+let platformSmallTallImage = createImage(platformSmallTall);
 let player = new Player();
 let platforms = [
-  new Platform({ x: -1, y: 470, image: platformImage }),
-  new Platform({ x: platformImage.width - 3, y: 470, image: platformImage }),
-  new Platform({
-    x: platformImage.width * 2 + 100,
-    y: 470,
-    image: platformImage,
-  }),
+  // new Platform({ x: -1, y: 470, image: platformImage }),
+  // new Platform({ x: platformImage.width - 3, y: 470, image: platformImage }),
+  // new Platform({
+  //   x: platformImage.width * 2 + 100,
+  //   y: 470,
+  //   image: platformImage,
+  // }),
 ];
 
 let genericObject = [
-  new GenericObject({
-    x: -1,
-    y: -1,
-    image: createImage(background),
-  }),
-
-  new GenericObject({
-    x: -1,
-    y: -1,
-    image: createImage(hills),
-  }),
+  // new GenericObject({
+  //   x: -1,
+  //   y: -1,
+  //   image: createImage(background),
+  // }),
+  // new GenericObject({
+  //   x: -1,
+  //   y: -1,
+  //   image: createImage(hills),
+  // }),
 ];
 
 const keys = {
@@ -130,10 +136,35 @@ function init() {
 
   player = new Player();
   platforms = [
+    new Platform({
+      x:
+        platformImage.width * 4 +
+        300 -
+        2 +
+        platformImage.width -
+        platformSmallTallImage.width,
+      y: 270,
+      image: createImage(platformSmallTall),
+    }),
     new Platform({ x: -1, y: 470, image: platformImage }),
     new Platform({ x: platformImage.width - 3, y: 470, image: platformImage }),
     new Platform({
       x: platformImage.width * 2 + 100,
+      y: 470,
+      image: platformImage,
+    }),
+    new Platform({
+      x: platformImage.width * 3 + 300,
+      y: 470,
+      image: platformImage,
+    }),
+    new Platform({
+      x: platformImage.width * 4 + 300 - 2,
+      y: 470,
+      image: platformImage,
+    }),
+    new Platform({
+      x: platformImage.width * 5 + 700 - 2,
       y: 470,
       image: platformImage,
     }),
@@ -171,29 +202,32 @@ function animate() {
   });
   player.update();
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
-  } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = player.speed;
+  } else if (
+    (keys.left.pressed && player.position.x > 100) ||
+    (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)
+  ) {
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
 
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       platforms.forEach((platform) => {
         //platform.draw();
-        platform.position.x -= 5;
+        platform.position.x -= player.speed;
       });
       genericObject.forEach((genericObj) => {
-        genericObj.position.x -= 3;
+        genericObj.position.x -= player.speed * 0.66;
       });
-    } else if (keys.left.pressed) {
-      scrollOffset -= 5;
+    } else if (keys.left.pressed && scrollOffset > 0) {
+      scrollOffset -= player.speed;
       platforms.forEach((platform) => {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
 
       genericObject.forEach((genericObj) => {
-        genericObj.position.x += 3;
+        genericObj.position.x += player.speed * 0.66;
       });
     }
   }
@@ -212,7 +246,7 @@ function animate() {
   });
 
   //! Если выиграл
-  if (scrollOffset > 2000) {
+  if (scrollOffset > platformImage.width * 5 + 300 - 2) {
     console.log('You win');
   }
 
@@ -221,7 +255,7 @@ function animate() {
     init();
   }
 }
-
+init();
 animate();
 
 addEventListener('keydown', ({ keyCode }) => {
@@ -243,7 +277,7 @@ addEventListener('keydown', ({ keyCode }) => {
 
     case 87:
       console.log('up');
-      player.velocity.y -= 5;
+      player.velocity.y -= 25;
       break;
 
     default:
@@ -269,7 +303,6 @@ addEventListener('keyup', ({ keyCode }) => {
 
     case 87:
       console.log('up');
-      player.velocity.y -= 5;
       break;
 
     default:
